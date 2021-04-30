@@ -1,0 +1,6 @@
+---
+# adding http & https port 
+
+services:
+  - https
+  - http
