@@ -4,7 +4,14 @@
       ansible.builtin.rpm_key:
         state: present
         key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-    
+  
+
+
+    - name: Put SELinux in permissive mode, logging actions that would be blocked.
+      selinux:
+        policy: targeted
+        state: permissive   
+
     - name: installing Java JDK 1.8.0-openjdk-devel
       dnf:
         name: java-1.8.0-openjdk-devel
@@ -12,9 +19,8 @@
 
     - name: Create Elastic repo
       template:
-        scr: templates/elasticsearch.j2
+        src: templates/elasticsearch.j2
         dest: /etc/yum.repos.d/elastic.repo 
-        mode: 0644
 
     - name: install elasticsearch packages 
       dnf:
@@ -23,6 +29,7 @@
 
     - name: start enable elasticsearch
       systemd:
+        name: elasticsearch     
         state: started
         enabled: yes
      
@@ -30,6 +37,8 @@
       dnf:
         name: filebeat
         state: present
+
+     
 
 
     - name: Starting filebeat service
@@ -45,6 +54,7 @@
 
     - name: Enable and start Kibana
       systemd:
+        name: kibana      
         state: started
         enabled: yes 
 
@@ -68,9 +78,16 @@
         state: directory
         mode: '0755'  
 
+    - name: Updating configs for kibana
+      template:
+        src: templates/kibana.confi.j2
+        dest:  /etc/kibana/kibana.yml
+      notify: restart kibana
+
+
     - name: performing cluster configuration
       template:
         src: templates/elasticsearch.yml.j2
         dest: /etc/elasticsearch/elasticsearch.yml
-        notify: restart elasticsearch
+      notify: restart elasticsearch
 
