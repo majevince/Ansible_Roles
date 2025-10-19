@@ -1,6 +1,7 @@
 # Ansible Roles  
 *A curated collection of reusable Ansible roles for infrastructure automation*
-
+**Author:** Vincent Anyah
+**Repository:** https://github.com/majevince/Ansible_Roles
 ---
 
 ## Table of Contents  
@@ -59,29 +60,127 @@ Within this collection you’ll find:
 ---
 
 ## Repository Structure  
-Here’s a high-level view of how the repository is laid out (adjust names to reflect your actual folders):
-├── ansible.cfg # Ansible configuration file
-├── inventory/ # Inventory definitions (by environment)
-│ ├── production.yml
-│ └── staging.yml
-├── playbooks/ # Example playbooks that make use of the roles
-│ ├── site.yml
-│ ├── webservers.yml
-│ └── databases.yml
-├── roles/ # Collection of reusable Ansible roles
-│ ├── common/ # OS & baseline tasks
-│ │ ├── tasks/…
-│ │ ├── defaults/…
-│ │ ├── handlers/…
-│ │ └── meta/…
-│ ├── hardening/ # Security‐hardening tasks
-│ ├── nginx/ # Web server deployment/config
-│ ├── firewall/ # Network/security firewall role
-│ └── <other_role>/
-├── tests/ # (Optional) Test environment for roles
-└── README.md # This fil
 
-Each role typically follows the standard structure: `tasks/`, `handlers/`, `defaults/`, `vars/`, `templates/`, `files/`, `meta/` etc. This structure is recommended by Ansible documentation. :contentReference[oaicite:1]{index=1}
+```
+├── ansible.cfg                # Global Ansible configuration file
+├── inventory/                 # Inventory definitions (by environment)
+│   ├── production.yml
+│   └── staging.yml
+├── playbooks/                 # Example playbooks that make use of the roles
+│   ├── site.yml
+│   ├── webservers.yml
+│   └── databases.yml
+├── roles/                     # Collection of reusable Ansible roles
+│   ├── common/                # OS & baseline configuration tasks
+│   │   ├── tasks/
+│   │   ├── defaults/
+│   │   ├── handlers/
+│   │   └── meta/
+│   ├── hardening/             # Security-hardening tasks
+│   ├── nginx/                 # Web server deployment/configuration
+│   ├── firewall/              # Network/security firewall configuration
+│   └── <other_role>/          # Additional custom roles
+├── tests/                     # (Optional) Testing environment for roles
+└── README.md                  # This documentation
+
+## Features
+- Modular and reusable role structure.
+- Environment-based inventory management (staging and production).
+- Example playbooks for real-world deployment scenarios.
+- Support for system hardening, monitoring, firewall configuration, and more.
+- Easily extensible for additional roles and environments.
+
+## Getting Started
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/majevince/Ansible_Roles.git
+cd Ansible_Roles
+```
+
+### 2. Configure Inventory
+Edit the environment-specific inventory file based on your infrastructure:
+```yaml
+# inventory/production.yml
+all:
+  hosts:
+    web01.example.com:
+    db01.example.com:
+  vars:
+    ansible_user: admin
+```
+
+### 3. Update ansible.cfg (Optional)
+Ensure configuration paths are correct:
+```ini
+[defaults]
+inventory = ./inventory
+roles_path = ./roles
+host_key_checking = False
+```
+
+### 4. Run a Playbook
+Example command to deploy web servers:
+```bash
+ansible-playbook playbooks/webservers.yml -i inventory/production.yml
+```
+
+## Available Roles
+
+| Role         | Description                                     |
+|--------------|-------------------------------------------------|
+| `common`     | Installs core packages, updates, and baseline system configuration. |
+| `hardening`  | Applies security configurations and system hardening (CIS/FIS benchmarks). |
+| `nginx`      | Installs and configures NGINX web server. |
+| `firewall`   | Configures firewall rules using firewalld or ufw. |
+| `<custom>`   | Placeholder for user-defined roles. |
+
+Each role typically contains:
+```
+tasks/       # Main automation logic
+defaults/    # Default variables
+handlers/    # Service handlers (restart, reload etc.)
+vars/        # Role-specific variables (optional)
+meta/        # Dependencies or author info
+files/       # Static files
+templates/   # Jinja2 templates
+```
+
+## Example Playbook (site.yml)
+```yaml
+---
+- hosts: all
+  become: yes
+  roles:
+    - common
+    - hardening
+    - nginx
+    - firewall
+```
+
+## Testing Roles
+Roles can be tested manually or with tools like Molecule:
+```bash
+cd roles/<role_name>
+molecule test
+```
+
+## Contribution Guidelines
+- Fork the repository and create a feature branch.
+- Follow the existing role structure.
+- Submit a pull request with detailed documentation of your changes.
+
+## Future Enhancements
+- Add CI pipeline for automated testing (GitHub Actions).
+- Extend inventory files with group variables and host-specific configurations.
+- Add roles for Docker, Kubernetes, Prometheus, MySQL, etc.
+
+## License
+This project is licensed under the MIT License. Feel free to modify and distribute.
+
+---
+
+
 
 ---
 
